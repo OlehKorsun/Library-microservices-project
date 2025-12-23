@@ -14,7 +14,7 @@ public class Order
 
     private Order() { }
 
-    public Order(int amount, Book book)
+    public Order(int amount, int bookId)
     {
         if (amount <= 0)
         {
@@ -24,7 +24,6 @@ public class Order
         Amount = amount;
         CreatedAt = DateTime.UtcNow;
         OrderStatus = OrderStatus.Created;
-        Book = book ?? throw new ArgumentNullException(nameof(book));
-        BookId = book.BookId;
+        BookId = bookId;
     }
 }

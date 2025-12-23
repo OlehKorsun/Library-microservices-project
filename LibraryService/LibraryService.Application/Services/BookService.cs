@@ -72,7 +72,7 @@ public class BookService : IBookService
             book.Amount,
             book.Amount,
             book.Title,
-            author,
+            author.AuthorId,
             book.Description,
             book.ISBN,
             book.PublishedAt

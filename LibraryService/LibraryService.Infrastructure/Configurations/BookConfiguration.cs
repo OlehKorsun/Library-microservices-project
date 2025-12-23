@@ -20,7 +20,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         {
             t.HasCheckConstraint(
                 "CK_Books_CurrentAmount_NonNegative",
-                "[CurrentAmount] >= 0]"
+                "[CurrentAmount] >= 0"
             );
         });
 
@@ -30,7 +30,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         {
             t.HasCheckConstraint(
                 "CK_Books_AmountMustBe_NonNegative",
-                "[AmountMustBe] >= 0]"
+                "[AmountMustBe] >= 0"
             );
         });
         
@@ -38,7 +38,10 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .IsRequired()
             .HasMaxLength(100);
         
-        builder.Property(b => b.Author).IsRequired();
+        builder.HasOne(b => b.Author)
+            .WithMany(a => a.Books)
+            .HasForeignKey(b => b.AuthorId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
         
         builder.Property(b => b.Description)
             .IsRequired()

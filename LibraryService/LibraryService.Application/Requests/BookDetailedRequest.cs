@@ -9,5 +9,5 @@ public class BookDetailedRequest
     public string Author { get; set; }
     public string Description { get; set; }
     public string ISBN { get; set; }
-    public DateOnly PublishedAt { get; set; }
+    public DateTime PublishedAt { get; set; }
 }

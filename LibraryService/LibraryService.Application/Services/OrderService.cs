@@ -27,7 +27,7 @@ public class OrderService : IOrderService
         
         var order = new Order(
             amount,
-            book
+            book.BookId
         );
 
         await _orderRepository.AddOrderAsync(order);

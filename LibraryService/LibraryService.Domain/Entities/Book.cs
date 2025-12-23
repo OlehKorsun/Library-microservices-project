@@ -9,18 +9,19 @@ public class Book
     public int AmountMustBe { get; private set; }
     public string Title { get; private set; }
     public Author Author { get; private set; }
+    public int AuthorId { get; private set; }
     public string Description { get; private set; }
     public string ISBN { get; private set; }
-    public DateOnly PublishedAt { get; private set; }
+    public DateTime PublishedAt { get; private set; }
     
     private Book(){ }
     
-    public Book(int currentAmount, int amountMustBe, string title, Author author, string description, string isbn, DateOnly publishedAt)
+    public Book(int currentAmount, int amountMustBe, string title, int authorId, string description, string isbn, DateTime publishedAt)
     {
         CurrentAmount = currentAmount;
         AmountMustBe = amountMustBe;
         Title = title;
-        Author = author;
+        AuthorId = authorId;
         Description = description;
         ISBN = isbn;
         PublishedAt = publishedAt;

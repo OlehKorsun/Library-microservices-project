@@ -22,7 +22,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.CreatedAt).IsRequired();
         
         builder.Property(o => o.OrderStatus).IsRequired();
-
-        builder.Property(o => o.BookId).IsRequired();
+        
+        builder.HasOne(o => o.Book)
+            .WithMany()
+            .HasForeignKey(o => o.BookId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }
