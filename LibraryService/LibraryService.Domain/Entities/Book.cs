@@ -25,6 +25,14 @@ public class Book
         ISBN = isbn;
         PublishedAt = publishedAt;
     }
+    
+    public void AddCopies(int amount)
+    {
+        if (amount <= 0)
+            throw new ArgumentException("Amount must be greater than zero");
+
+        CurrentAmount += amount;
+    }
 }
 
 

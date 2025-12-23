@@ -1,13 +1,11 @@
-namespace LibraryService.Application.Requests;
+namespace LibraryService.Application.DTOs;
 
-public class BookDetailedRequest
+public class BookDto
 {
-    public int Id { get; set; }
     public string Title { get; set; }
-    public int CurrentAmount { get; set; }
-    public int AmountMustBe { get; set; }
     public string Author { get; set; }
     public string Description { get; set; }
     public string ISBN { get; set; }
     public DateOnly PublishedAt { get; set; }
+    public int Amount { get; set; }
 }

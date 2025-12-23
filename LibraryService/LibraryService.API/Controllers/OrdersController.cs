@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryService.API.Controllers;
 
+[ApiController]
+[Route("/api/[controller]")]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
@@ -13,9 +15,15 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    public async Task<IActionResult> OrderBooksAsync(int id)
+    [HttpPost("{bookId}")]
+    public async Task<IActionResult> OrderBooksAsync([FromRoute]int bookId, [FromBody]int amount)
     {
-        return Ok();
+        var order = await _orderService.AddOrderAsync(bookId, amount);
+        return CreatedAtAction(
+            nameof(OrderBooksAsync),
+            new {bookId},
+            order
+        );
     }
 
 }

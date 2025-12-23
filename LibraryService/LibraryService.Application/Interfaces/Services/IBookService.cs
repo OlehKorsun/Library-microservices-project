@@ -8,5 +8,5 @@ public interface IBookService
     Task<IEnumerable<BookRequest>> GetAllBooksAsync();
     Task<BookDetailedRequest> GetBookByIdAsync(int id);
     Task AddBooksAsync(int id, int number);
-    Task<BookRequest> AddNewBooksAsync(BookDTO book);
+    Task<BookRequest> AddNewBooksAsync(BookDto book);
 }

@@ -1,3 +1,5 @@
+using LibraryService.Domain.Enums;
+
 namespace LibraryService.Domain.Entities;
 
 public class Order
@@ -6,15 +8,23 @@ public class Order
     public int Amount { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public OrderStatus OrderStatus { get; private set; }
-    public Book Book { get; private set; }
+    
+    public int BookId { get; private set; }
+    public Book? Book { get; private set; }
 
     private Order() { }
 
-    public Order(int amount, DateTime createdAt, OrderStatus orderStatus, Book book)
+    public Order(int amount, Book book)
     {
+        if (amount <= 0)
+        {
+            throw new ArgumentException("Amount must be greater than 0", nameof(amount));
+        }
+
         Amount = amount;
-        CreatedAt = createdAt;
-        OrderStatus = orderStatus;
-        Book = book;
+        CreatedAt = DateTime.UtcNow;
+        OrderStatus = OrderStatus.Created;
+        Book = book ?? throw new ArgumentNullException(nameof(book));
+        BookId = book.BookId;
     }
 }

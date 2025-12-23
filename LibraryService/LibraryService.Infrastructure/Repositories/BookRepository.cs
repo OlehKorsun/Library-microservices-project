@@ -1,6 +1,6 @@
 using LibraryService.Application.Interfaces.Repositories;
-using LibraryService.Application.Requests;
 using LibraryService.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryService.Infrastructure.Repositories;
 
@@ -14,18 +14,27 @@ public class BookRepository : IBookRepository
         _dbContext = dbContext;
     }
     
-    public Task<IEnumerable<Book>> GetAllBooksAsync()
+    public async Task<IEnumerable<Book>> GetAllBooksAsync()
     {
-        throw new NotImplementedException();
+        var books = await _dbContext.Books.ToListAsync();
+        return books;
     }
 
-    public Task<Book> GetBookByIdAsync(int id)
+    public async Task<Book> GetBookByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var book = await _dbContext.Books.FindAsync(id);
+        return book;
     }
 
-    public Task AddBookAsync(Book book)
+    public async Task AddNewBookAsync(Book book)
     {
-        throw new NotImplementedException();
+        await _dbContext.Books.AddAsync(book);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateBookAsync(Book book)
+    {
+        _dbContext.Books.Update(book);
+        await _dbContext.SaveChangesAsync();
     }
 }

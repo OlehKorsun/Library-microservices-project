@@ -38,12 +38,12 @@ public class BooksController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> AddNewBooksAsync([FromBody] BookDTO book)
+    public async Task<IActionResult> AddNewBooksAsync([FromBody] BookDto book)
     {
         var createdBook = await _bookService.AddNewBooksAsync(book);
         return CreatedAtAction(
             nameof(GetBookByIdAsync),
-            new {id = createdBook},
+            new {id = createdBook.Id},
             createdBook
         );
     }
