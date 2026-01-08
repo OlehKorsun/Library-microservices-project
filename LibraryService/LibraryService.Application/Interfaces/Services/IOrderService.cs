@@ -6,5 +6,5 @@ namespace LibraryService.Application.Interfaces.Services;
 
 public interface IOrderService
 {
-    Task<OrderDto> AddOrderAsync(int bookId, int amount);
+    Task<OrderDto> AddOrderAsync(int bookId, int amount, CancellationToken token);
 }

@@ -4,25 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryService.Infrastructure.Repositories;
 
-public class AuthorRepository : IAuthorRepository
+public class AuthorRepository(AppDbContext dbContext) : IAuthorRepository
 {
     
-    private readonly LibraryDbContext _dbContext;
-
-    public AuthorRepository(LibraryDbContext dbContext)
+    public async Task<Author?> GetByNameAsync(string name, CancellationToken token)
     {
-        _dbContext = dbContext;
-    }
-    
-    public async Task<Author?> GetByNameAsync(string name)
-    {
-        var author = await _dbContext.Authors.FindAsync(name);
+        var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Name == name, token);
         return author;
     }
 
-    public async Task AddAsync(Author author)
+    public async Task AddAsync(Author author, CancellationToken token)
     {
-        _dbContext.Authors.Add(author);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Authors.Add(author);
+        await dbContext.SaveChangesAsync(token);
     }
 }

@@ -12,27 +12,13 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         
         builder.HasKey(b => b.BookId);
         
-        builder.Property(b => b.CurrentAmount)
+        builder.Property(b => b.CurrentCount)
             .IsRequired()
             .HasDefaultValue(0);
         
-        builder.ToTable(t =>
-        {
-            t.HasCheckConstraint(
-                "CK_Books_CurrentAmount_NonNegative",
-                "[CurrentAmount] >= 0"
-            );
-        });
 
-        builder.Property(b => b.AmountMustBe).IsRequired().HasDefaultValue(0);
+        builder.Property(b => b.MaxCount).IsRequired().HasDefaultValue(0);
         
-        builder.ToTable(t =>
-        {
-            t.HasCheckConstraint(
-                "CK_Books_AmountMustBe_NonNegative",
-                "[AmountMustBe] >= 0"
-            );
-        });
         
         builder.Property(b => b.Title)
             .IsRequired()
@@ -41,7 +27,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.HasOne(b => b.Author)
             .WithMany(a => a.Books)
             .HasForeignKey(b => b.AuthorId)
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.Cascade);
         
         builder.Property(b => b.Description)
             .IsRequired()

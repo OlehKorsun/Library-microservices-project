@@ -12,12 +12,8 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         
         builder.HasKey(o => o.OrderId);
         
-        builder.Property(o => o.Amount).IsRequired();
+        builder.Property(o => o.Count).IsRequired();
         
-        builder.ToTable(o => o.HasCheckConstraint(
-                "CK_Orders_Amount_NonNegative",
-                "[Amount] >= 0"
-            ));
         
         builder.Property(o => o.CreatedAt).IsRequired();
         
@@ -26,6 +22,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasOne(o => o.Book)
             .WithMany()
             .HasForeignKey(o => o.BookId)
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

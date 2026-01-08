@@ -6,34 +6,32 @@ using LibraryService.Domain.Exceptions;
 
 namespace LibraryService.Application.Services;
 
-public class OrderService : IOrderService
+public class OrderService(
+    IOrderRepository orderRepository, IBookRepository bookRepository) : IOrderService
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IBookRepository _bookRepository;
 
-    public OrderService(IOrderRepository orderRepository, IBookRepository bookRepository)
+    
+    public async Task<OrderDto> AddOrderAsync(int bookId, int amount, CancellationToken token)
     {
-        _orderRepository = orderRepository;
-        _bookRepository = bookRepository;
-    }
-    public async Task<OrderDto> AddOrderAsync(int bookId, int amount)
-    {
-        var book = await _bookRepository.GetBookByIdAsync(bookId);
+        var book = await bookRepository.GetBookByIdAsync(bookId, token);
 
         if (book == null)
         {
-            throw new BookNotFoundException(bookId);
+            throw new BookNotFoundException($"Book with id {bookId} was not found!");
         }
         
-        var order = new Order(
-            amount,
-            book.BookId
-        );
+        var order = new Order()
+        {
+            Count =  amount,
+            CreatedAt = DateTime.Now,
+            BookId =  bookId
+        };
 
-        await _orderRepository.AddOrderAsync(order);
+        await orderRepository.AddOrderAsync(order, token);
         var result = new OrderDto()
         {
-            Amount = order.Amount,
+            OrderId =  order.OrderId,
+            Count = order.Count,
             CreatedAt = order.CreatedAt,
             BookTitle = book.Title,
             Status = order.OrderStatus.ToString(),

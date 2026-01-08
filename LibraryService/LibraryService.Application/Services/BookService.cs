@@ -7,39 +7,44 @@ using LibraryService.Domain.Exceptions;
 
 namespace LibraryService.Application.Services;
 
-public class BookService : IBookService
+public class BookService(
+    IBookRepository bookRepository, IAuthorRepository authorRepository) : IBookService
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IAuthorRepository _authorRepository;
-
-    public BookService(IBookRepository bookRepository, IAuthorRepository authorRepository)
+    
+    
+    public async Task<PagedBooks<BookDto>> GetPagedBooksAsync(int page, int pageSize, CancellationToken token)
     {
-        _bookRepository = bookRepository;
-        _authorRepository = authorRepository;
-    }
-    public async Task<IEnumerable<BookRequest>> GetAllBooksAsync()
-    {
-        var books = await _bookRepository.GetAllBooksAsync();
-        return books.Select(a => new BookRequest()
+        var books = await bookRepository.GetPagedBooksAsync(page, pageSize, token);
+        var a = books.Select(a => new BookDto()
         {
+            BookId =  a.BookId,
             Title = a.Title,
-            AmountMustBe = a.AmountMustBe,
-            CurrentAmount = a.CurrentAmount,
+            MaxCount = a.MaxCount,
+            CurrentCount = a.CurrentCount,
         });
+
+        var count = await bookRepository.GetBookCountAsync(token);
+
+        return new PagedBooks<BookDto>()
+        {
+            Books = a,
+            Page =  page,
+            PageSize = pageSize,
+            TotalCount = count
+        };
     }
 
-    public async Task<BookDetailedRequest> GetBookByIdAsync(int id)
+    public async Task<BookDetailedDto> GetBookByIdAsync(int id, CancellationToken token)
     {
-        var book = await _bookRepository.GetBookByIdAsync(id);
-        if (book == null)
+        var book = await bookRepository.GetBookByIdAsync(id, token) 
+                   ?? throw new BookNotFoundException($"Book with id {id} was not found!");
+        
+        return new BookDetailedDto()
         {
-            throw new BookNotFoundException(id);
-        }
-        return new BookDetailedRequest()
-        {
+            BookId =  book.BookId,
             Title = book.Title,
-            AmountMustBe = book.AmountMustBe,
-            CurrentAmount = book.CurrentAmount,
+            MaxCount = book.MaxCount,
+            CurrentCount = book.CurrentCount,
             Author = book.Author.Name,
             Description = book.Description,
             ISBN = book.ISBN,
@@ -47,44 +52,47 @@ public class BookService : IBookService
         };
     }
 
-    public async Task AddBooksAsync(int id, int number)
+    public async Task AddBooksAsync(int id, int number, CancellationToken token)
     {
-        var book = await _bookRepository.GetBookByIdAsync(id);
-        if (book == null)
-        {
-            throw new BookNotFoundException(id);
-        }
-        book.AddCopies(number);
+        var book = await bookRepository.GetBookByIdAsync(id, token) 
+                   ?? throw new BookNotFoundException($"Book with id {id} was not found!");
         
-        await _bookRepository.UpdateBookAsync(book);
+        if(number <= 0)
+            throw new BadRequestException($"Number of books must be greater than zero!");
+        
+        book.CurrentCount += number;
+        
+        await bookRepository.UpdateBookAsync(book, token);
     }
 
-    public async Task<BookRequest> AddNewBooksAsync(BookDto book)
+    public async Task<BookDto> AddNewBooksAsync(BookRequest book, CancellationToken token)
     {
-        var author = await _authorRepository.GetByNameAsync(book.Author);
-        if (author == null)
+        var author = await authorRepository.GetByNameAsync(book.Author, token);
+        if(author == null)
         {
-            author = new Author(book.Author);
-            await _authorRepository.AddAsync(author);
+            author = new Author(){ Name = book.Author };
+            await authorRepository.AddAsync(author, token);
         }
-
-        Book newBook = new Book(
-            book.Amount,
-            book.Amount,
-            book.Title,
-            author.AuthorId,
-            book.Description,
-            book.ISBN,
-            book.PublishedAt
-            );
         
-        await _bookRepository.AddNewBookAsync(newBook);
-
-        var result = new BookRequest()
+        Book newBook = new Book()
         {
+            CurrentCount = book.CurrentCount,
+            MaxCount = book.CurrentCount,
+            Title = book.Title,
+            AuthorId =  author.AuthorId,
+            Description = book.Description,
+            ISBN = book.ISBN,
+            PublishedAt = book.PublishedAt
+        };
+        
+        await bookRepository.AddNewBookAsync(newBook, token);
+
+        var result = new BookDto()
+        {
+            BookId =   newBook.BookId,
             Title = newBook.Title,
-            AmountMustBe = newBook.AmountMustBe,
-            CurrentAmount = newBook.CurrentAmount,
+            MaxCount = newBook.MaxCount,
+            CurrentCount = newBook.CurrentCount,
         };
         return result;
     }

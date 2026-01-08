@@ -4,18 +4,12 @@ using LibraryService.Domain.Entities;
 
 namespace LibraryService.Infrastructure.Repositories;
 
-public class OrderRepository : IOrderRepository
+public class OrderRepository(AppDbContext dbContext) : IOrderRepository
 {
-    private readonly LibraryDbContext _dbContext;
-
-    public OrderRepository(LibraryDbContext dbContext)
+    
+    public async Task AddOrderAsync(Order order, CancellationToken token)
     {
-        _dbContext = dbContext;
-    }
-
-    public async Task AddOrderAsync(Order order)
-    {
-        await _dbContext.Orders.AddAsync(order);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Orders.AddAsync(order,  token);
+        await dbContext.SaveChangesAsync(token);
     }
 }

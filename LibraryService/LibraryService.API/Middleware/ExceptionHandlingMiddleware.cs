@@ -2,37 +2,31 @@ using LibraryService.Domain.Exceptions;
 
 namespace LibraryService.API.Middleware;
 
-public class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware (
+    RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    
     
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
-            await _next(httpContext);
+            await next(httpContext);
         }
-        catch (AppException ex)
+        catch (BookNotFoundException ex)
         {
-            _logger.LogWarning(ex, "Domain exception occured");
-            await HandleExceptionAsync(httpContext, ex);
+            logger.LogWarning(ex.Message);
+            await HandleExceptionAsync(httpContext, ex, StatusCodes.Status404NotFound, ex.Message);
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Unauthorized access");
+            logger.LogWarning(ex, "Unauthorized access");
             await HandleExceptionAsync(httpContext, ex, StatusCodes.Status403Forbidden, "Access Denied");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            logger.LogError(ex, "Unhandled exception");
             await HandleExceptionAsync(httpContext, ex, StatusCodes.Status500InternalServerError, "Internal Server Error");
         }
     }
@@ -62,7 +56,7 @@ public class ExceptionHandlingMiddleware
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/json";
 
-        var responce = new
+        var response = new
         {
             error = new
             {
@@ -71,7 +65,7 @@ public class ExceptionHandlingMiddleware
             }
         };
         
-        var json = System.Text.Json.JsonSerializer.Serialize(responce);
+        var json = System.Text.Json.JsonSerializer.Serialize(response);
         await httpContext.Response.WriteAsync(json);
 
 

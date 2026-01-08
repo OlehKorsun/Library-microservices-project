@@ -2,8 +2,12 @@ namespace LibraryService.Application.Requests;
 
 public class BookRequest
 {
-    public int Id { get; set; }
+    public int BookId { get; set; }
     public string Title { get; set; }
-    public int CurrentAmount { get; set; }
-    public int AmountMustBe { get; set; }
+    public int CurrentCount { get; set; }
+    public int MaxCount { get; set; }
+    public string ISBN { get; set; }
+    public string Author { get; set; }
+    public DateTime PublishedAt { get; set; }
+    public string Description { get; set; }
 }

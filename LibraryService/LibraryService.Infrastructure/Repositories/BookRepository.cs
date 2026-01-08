@@ -4,37 +4,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryService.Infrastructure.Repositories;
 
-public class BookRepository : IBookRepository
+public class BookRepository(AppDbContext dbContext) : IBookRepository
 {
     
-    private readonly LibraryDbContext _dbContext;
-
-    public BookRepository(LibraryDbContext dbContext)
+    public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken token)
     {
-        _dbContext = dbContext;
-    }
-    
-    public async Task<IEnumerable<Book>> GetAllBooksAsync()
-    {
-        var books = await _dbContext.Books.ToListAsync();
+        var books = await dbContext.Books
+            .OrderBy(b => b.BookId)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(token);
         return books;
     }
 
-    public async Task<Book> GetBookByIdAsync(int id)
+    public async Task<int> GetBookCountAsync(CancellationToken token)
     {
-        var book = await _dbContext.Books.FindAsync(id);
+        var count = await dbContext.Books.CountAsync(token);
+        return count;
+    }
+
+    public async Task<Book?> GetBookByIdAsync(int id, CancellationToken token)
+    {
+        var book = await dbContext.Books.FindAsync(id);
         return book;
     }
 
-    public async Task AddNewBookAsync(Book book)
+    public async Task AddNewBookAsync(Book book, CancellationToken token)
     {
-        await _dbContext.Books.AddAsync(book);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Books.AddAsync(book, token);
+        await dbContext.SaveChangesAsync(token);
     }
 
-    public async Task UpdateBookAsync(Book book)
+    public async Task UpdateBookAsync(Book book, CancellationToken token)
     {
-        _dbContext.Books.Update(book);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Books.Update(book);
+        await dbContext.SaveChangesAsync(token);
     }
 }

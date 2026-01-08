@@ -5,8 +5,8 @@ namespace LibraryService.Application.Interfaces.Services;
 
 public interface IBookService
 {
-    Task<IEnumerable<BookRequest>> GetAllBooksAsync();
-    Task<BookDetailedRequest> GetBookByIdAsync(int id);
-    Task AddBooksAsync(int id, int number);
-    Task<BookRequest> AddNewBooksAsync(BookDto book);
+    Task<PagedBooks<BookDto>> GetPagedBooksAsync(int page, int pageSize, CancellationToken token);
+    Task<BookDetailedDto> GetBookByIdAsync(int id, CancellationToken token);
+    Task AddBooksAsync(int id, int number, CancellationToken token);
+    Task<BookDto> AddNewBooksAsync(BookRequest book, CancellationToken token);
 }

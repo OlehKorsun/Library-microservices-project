@@ -4,8 +4,9 @@ namespace LibraryService.Application.Interfaces.Repositories;
 
 public interface IBookRepository
 {
-    Task<IEnumerable<Book>> GetAllBooksAsync();
-    Task<Book> GetBookByIdAsync(int id);
-    Task AddNewBookAsync(Book book);
-    Task UpdateBookAsync(Book book);
+    Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken token);
+    Task<int> GetBookCountAsync(CancellationToken token);
+    Task<Book?> GetBookByIdAsync(int id, CancellationToken token);
+    Task AddNewBookAsync(Book book, CancellationToken token);
+    Task UpdateBookAsync(Book book, CancellationToken token);
 }
