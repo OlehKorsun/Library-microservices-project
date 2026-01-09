@@ -1,6 +1,6 @@
 namespace LibraryService.Application.DTOs;
 
-public class PagedBooks<T>
+public sealed class PagedBooks<T>
 {
     public IEnumerable<T> Books  { get; set; }
     public int Page { get; set; }

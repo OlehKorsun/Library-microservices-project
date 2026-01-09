@@ -5,9 +5,7 @@ namespace LibraryService.API.Middleware;
 public class ExceptionHandlingMiddleware (
     RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
-    
-    
-    
+    // TO DO MODIFY WITH IExceptionHandler
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -67,7 +65,5 @@ public class ExceptionHandlingMiddleware (
         
         var json = System.Text.Json.JsonSerializer.Serialize(response);
         await httpContext.Response.WriteAsync(json);
-
-
     }
 }

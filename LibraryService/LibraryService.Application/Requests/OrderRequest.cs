@@ -1,6 +1,6 @@
 namespace LibraryService.Application.Requests;
 
-public class OrderRequest
+public sealed class OrderRequest
 {
     public int Id { get; set; }
     public int Count { get; set; }

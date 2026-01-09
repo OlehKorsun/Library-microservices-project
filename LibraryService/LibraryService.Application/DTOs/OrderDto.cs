@@ -1,6 +1,6 @@
 namespace LibraryService.Application.DTOs;
 
-public class OrderDto
+public sealed class OrderDto
 {
     public int OrderId { get; set; }
     public int Count { get; set; }

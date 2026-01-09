@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace LibraryService.Domain.Entities;
 
 public class Book
@@ -13,7 +11,6 @@ public class Book
     public string Description { get; init; }
     public string ISBN { get; init; }
     public DateTime PublishedAt { get; init; }
-    
 }
 
 

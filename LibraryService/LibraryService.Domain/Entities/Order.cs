@@ -8,8 +8,6 @@ public class Order
     public int Count { get; init; }
     public DateTime CreatedAt { get; init; }
     public OrderStatus OrderStatus { get; init; }
-    
     public int BookId { get; init; }
     public Book? Book { get; init; }
-    
 }

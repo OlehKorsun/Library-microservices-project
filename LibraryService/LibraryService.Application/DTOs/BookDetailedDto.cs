@@ -1,6 +1,6 @@
 namespace LibraryService.Application.Requests;
 
-public class BookDetailedDto
+public sealed class BookDetailedDto
 {
     public int BookId { get; set; }
     public string Title { get; set; }

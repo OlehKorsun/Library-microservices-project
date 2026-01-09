@@ -5,11 +5,10 @@ using LibraryService.Infrastructure.Repositories;
 
 namespace LibraryService.API.Extensions;
 
-public static class ServiceCollectionExtensions
+public static class AddApplicationDependencies
 {
-    public static IServiceCollection AddApiDependencies(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAppDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IBookRepository, BookRepository>();

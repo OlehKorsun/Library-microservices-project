@@ -13,7 +13,6 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
         builder.HasKey(a => a.AuthorId);
         
         builder.Property(a => a.Name)
-            .IsRequired()
             .HasMaxLength(50);
     }
 }

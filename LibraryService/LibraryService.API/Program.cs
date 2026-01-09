@@ -5,17 +5,14 @@ using LibraryService.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddApiDependencies(builder.Configuration);
-
+builder.Services.AddAppDependencies(builder.Configuration);
+builder.Services.AddDbDependencies(builder.Configuration);
 
 var app = builder.Build();
 

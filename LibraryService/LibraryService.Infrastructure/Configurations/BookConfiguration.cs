@@ -11,17 +11,12 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.ToTable("Books");
         
         builder.HasKey(b => b.BookId);
-        
-        builder.Property(b => b.CurrentCount)
-            .IsRequired()
-            .HasDefaultValue(0);
-        
 
-        builder.Property(b => b.MaxCount).IsRequired().HasDefaultValue(0);
-        
+        builder.Property(b => b.CurrentCount);
+
+        builder.Property(b => b.MaxCount);
         
         builder.Property(b => b.Title)
-            .IsRequired()
             .HasMaxLength(100);
         
         builder.HasOne(b => b.Author)
@@ -30,11 +25,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .OnDelete(DeleteBehavior.Cascade);
         
         builder.Property(b => b.Description)
-            .IsRequired()
             .HasMaxLength(200);
         
-        builder.Property(b => b.ISBN).IsRequired().HasMaxLength(20);
-        
-        builder.Property(b => b.PublishedAt).IsRequired();
+        builder.Property(b => b.ISBN).HasMaxLength(20);
     }
 }

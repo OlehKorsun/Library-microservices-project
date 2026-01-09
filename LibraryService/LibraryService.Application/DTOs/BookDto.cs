@@ -1,6 +1,6 @@
 namespace LibraryService.Application.DTOs;
 
-public class BookDto
+public sealed class BookDto
 {
     public int BookId { get; set; }
     public string Title { get; set; }

@@ -6,16 +6,19 @@ namespace LibraryService.Infrastructure.Repositories;
 
 public class AuthorRepository(AppDbContext dbContext) : IAuthorRepository
 {
-    
-    public async Task<Author?> GetByNameAsync(string name, CancellationToken token)
+    public async Task<Author?> GetByNameAsync(string name, CancellationToken ct)
     {
-        var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Name == name, token);
+        var author = await dbContext.Authors.FirstOrDefaultAsync(a => a.Name == name, ct);
         return author;
     }
 
-    public async Task AddAsync(Author author, CancellationToken token)
+    public async Task AddAsync(Author author, CancellationToken ct)
     {
-        dbContext.Authors.Add(author);
-        await dbContext.SaveChangesAsync(token);
+        await dbContext.Authors.AddAsync(author, ct);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken ct)
+    {
+        await dbContext.SaveChangesAsync(ct);
     }
 }

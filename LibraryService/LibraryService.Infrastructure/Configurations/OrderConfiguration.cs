@@ -12,13 +12,6 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         
         builder.HasKey(o => o.OrderId);
         
-        builder.Property(o => o.Count).IsRequired();
-        
-        
-        builder.Property(o => o.CreatedAt).IsRequired();
-        
-        builder.Property(o => o.OrderStatus).IsRequired();
-        
         builder.HasOne(o => o.Book)
             .WithMany()
             .HasForeignKey(o => o.BookId)

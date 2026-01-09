@@ -6,38 +6,35 @@ namespace LibraryService.Infrastructure.Repositories;
 
 public class BookRepository(AppDbContext dbContext) : IBookRepository
 {
-    
-    public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken token)
+    public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct)
     {
         var books = await dbContext.Books
             .OrderBy(b => b.BookId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync(token);
+            .ToListAsync(ct);
         return books;
     }
 
-    public async Task<int> GetBookCountAsync(CancellationToken token)
+    public async Task<int> GetBookCountAsync(CancellationToken ct)
     {
-        var count = await dbContext.Books.CountAsync(token);
+        var count = await dbContext.Books.CountAsync(ct);
         return count;
     }
 
-    public async Task<Book?> GetBookByIdAsync(int id, CancellationToken token)
+    public async Task<Book?> GetBookByIdAsync(int id, CancellationToken ct)
     {
-        var book = await dbContext.Books.FindAsync(id);
+        var book = await dbContext.Books.FindAsync([id], ct);
         return book;
     }
 
-    public async Task AddNewBookAsync(Book book, CancellationToken token)
+    public async Task AddNewBookAsync(Book book, CancellationToken ct)
     {
-        await dbContext.Books.AddAsync(book, token);
-        await dbContext.SaveChangesAsync(token);
+        await dbContext.Books.AddAsync(book, ct);
     }
 
-    public async Task UpdateBookAsync(Book book, CancellationToken token)
+    public async Task SaveChangesAsync(CancellationToken ct)
     {
-        dbContext.Books.Update(book);
-        await dbContext.SaveChangesAsync(token);
+        await dbContext.SaveChangesAsync(ct);
     }
 }

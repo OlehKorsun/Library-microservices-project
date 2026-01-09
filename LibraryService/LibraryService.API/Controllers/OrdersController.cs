@@ -7,12 +7,10 @@ namespace LibraryService.API.Controllers;
 [Route("/api/[controller]")]
 public class OrdersController(IOrderService orderService) : ControllerBase
 {
-
     [HttpPost("{bookId}")]
-    public async Task<IActionResult> OrderBooksAsync([FromRoute]int bookId, [FromBody]int amount, CancellationToken token)
+    public async Task<IActionResult> OrderBooksAsync([FromRoute]int bookId, [FromBody]int amount, CancellationToken ct = default)
     {
-        var order = await orderService.AddOrderAsync(bookId, amount, token);
+        var order = await orderService.AddOrderAsync(bookId, amount, ct);
         return Ok(order);
     }
-
 }

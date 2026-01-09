@@ -1,6 +1,6 @@
 namespace LibraryService.Application.Requests;
 
-public class BookRequest
+public sealed class BookRequest
 {
     public int BookId { get; set; }
     public string Title { get; set; }
