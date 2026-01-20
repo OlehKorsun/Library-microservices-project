@@ -7,7 +7,7 @@ namespace LibraryService.API.Configurations;
 
 public static class DatabaseConfigurations
 {
-    public static IServiceCollection AddDbDependencies(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContext>(options => 
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

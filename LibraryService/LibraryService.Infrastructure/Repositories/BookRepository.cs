@@ -6,7 +6,7 @@ namespace LibraryService.Infrastructure.Repositories;
 
 public class BookRepository(AppDbContext dbContext) : IBookRepository
 {
-    public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct)
+    public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct = default)
     {
         var books = await dbContext.Books
             .OrderBy(b => b.Id)
@@ -16,24 +16,24 @@ public class BookRepository(AppDbContext dbContext) : IBookRepository
         return books;
     }
 
-    public async Task<int> GetBookCountAsync(CancellationToken ct)
+    public async Task<int> GetBookCountAsync(CancellationToken ct = default)
     {
         var count = await dbContext.Books.CountAsync(ct);
         return count;
     }
 
-    public async Task<Book?> GetBookByIdAsync(int id, CancellationToken ct)
+    public async Task<Book?> GetBookByIdAsync(int id, CancellationToken ct = default)
     {
         var book = await dbContext.Books.FindAsync([id], ct);
         return book;
     }
 
-    public async Task AddNewBookAsync(Book book, CancellationToken ct)
+    public async Task AddNewBookAsync(Book book, CancellationToken ct = default)
     {
         await dbContext.Books.AddAsync(book, ct);
     }
 
-    public async Task SaveChangesAsync(CancellationToken ct)
+    public async Task SaveChangesAsync(CancellationToken ct = default)
     {
         await dbContext.SaveChangesAsync(ct);
     }
