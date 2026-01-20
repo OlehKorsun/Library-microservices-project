@@ -10,12 +10,12 @@ namespace LibraryService.Application.Services;
 public class BookService(
     IBookRepository bookRepository, IAuthorRepository authorRepository) : IBookService
 {
-    public async Task<PagedBooks<BookDto>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct)
+    public async Task<PagedBooks<BookDto>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct = default)
     {
         var books = await bookRepository.GetPagedBooksAsync(page, pageSize, ct);
         var a = books.Select(a => new BookDto()
         {
-            BookId =  a.BookId,
+            BookId =  a.Id,
             Title = a.Title,
             MaxCount = a.MaxCount,
             CurrentCount = a.CurrentCount,
@@ -32,14 +32,14 @@ public class BookService(
         };
     }
 
-    public async Task<BookDetailedDto> GetBookByIdAsync(int id, CancellationToken ct)
+    public async Task<BookDetailedDto> GetBookByIdAsync(int id, CancellationToken ct = default)
     {
         var book = await bookRepository.GetBookByIdAsync(id, ct) 
                    ?? throw new BookNotFoundException($"Book with id {id} was not found!");
         
         return new BookDetailedDto
         {
-            BookId =  book.BookId,
+            BookId =  book.Id,
             Title = book.Title,
             MaxCount = book.MaxCount,
             CurrentCount = book.CurrentCount,
@@ -50,7 +50,7 @@ public class BookService(
         };
     }
 
-    public async Task AddCopiesAsync(int id, int number, CancellationToken ct)
+    public async Task AddCopiesAsync(int id, int number, CancellationToken ct = default)
     {
         if(number <= 0)
             throw new BadRequestException("Number of books must be greater than zero!");
@@ -63,12 +63,12 @@ public class BookService(
         await bookRepository.SaveChangesAsync(ct);
     }
 
-    public async Task<BookDto> AddNewBooksAsync(BookRequest book, CancellationToken ct)
+    public async Task AddNewBooksAsync(BookRequest book, CancellationToken ct = default)
     {
         var author = await authorRepository.GetByNameAsync(book.Author, ct) 
                      ?? new Author{Name = book.Author};
         
-        if(author.AuthorId == 0) 
+        if(author.Id == 0) 
             await authorRepository.AddAsync(author, ct);
         
         Book newBook = new Book
@@ -76,7 +76,7 @@ public class BookService(
             CurrentCount = book.CurrentCount,
             MaxCount = book.CurrentCount,
             Title = book.Title,
-            AuthorId =  author.AuthorId,
+            Author =  author,
             Description = book.Description,
             ISBN = book.ISBN,
             PublishedAt = book.PublishedAt
@@ -84,14 +84,5 @@ public class BookService(
         
         await bookRepository.AddNewBookAsync(newBook, ct);
         await bookRepository.SaveChangesAsync(ct);
-
-        var result = new BookDto
-        {
-            BookId =   newBook.BookId,
-            Title = newBook.Title,
-            MaxCount = newBook.MaxCount,
-            CurrentCount = newBook.CurrentCount,
-        };
-        return result;
     }
 }

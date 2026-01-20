@@ -10,11 +10,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
     {
         builder.ToTable("Books");
         
-        builder.HasKey(b => b.BookId);
-
-        builder.Property(b => b.CurrentCount);
-
-        builder.Property(b => b.MaxCount);
+        builder.HasKey(b => b.Id);
         
         builder.Property(b => b.Title)
             .HasMaxLength(100);
@@ -27,6 +23,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.Description)
             .HasMaxLength(200);
         
-        builder.Property(b => b.ISBN).HasMaxLength(20);
+        builder.Property(b => b.ISBN)
+            .HasMaxLength(20);
     }
 }

@@ -1,7 +1,5 @@
+using LibraryService.API.Configurations;
 using LibraryService.API.Middleware;
-using LibraryService.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using LibraryService.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -10,7 +10,7 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
     {
         builder.ToTable("Authors");
         
-        builder.HasKey(a => a.AuthorId);
+        builder.HasKey(a => a.Id);
         
         builder.Property(a => a.Name)
             .HasMaxLength(50);

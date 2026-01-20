@@ -9,7 +9,7 @@ public class BookRepository(AppDbContext dbContext) : IBookRepository
     public async Task<IEnumerable<Book>> GetPagedBooksAsync(int page, int pageSize, CancellationToken ct)
     {
         var books = await dbContext.Books
-            .OrderBy(b => b.BookId)
+            .OrderBy(b => b.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);

@@ -10,7 +10,7 @@ public class OrdersController(IOrderService orderService) : ControllerBase
     [HttpPost("{bookId}")]
     public async Task<IActionResult> OrderBooksAsync([FromRoute]int bookId, [FromBody]int amount, CancellationToken ct = default)
     {
-        var order = await orderService.AddOrderAsync(bookId, amount, ct);
-        return Ok(order);
+        await orderService.AddOrderAsync(bookId, amount, ct);
+        return Ok();
     }
 }

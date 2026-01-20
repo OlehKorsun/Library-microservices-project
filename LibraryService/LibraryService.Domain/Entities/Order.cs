@@ -4,7 +4,7 @@ namespace LibraryService.Domain.Entities;
 
 public class Order
 {
-    public int OrderId { get; init; }
+    public int Id { get; init; }
     public int Count { get; init; }
     public DateTime CreatedAt { get; init; }
     public OrderStatus OrderStatus { get; init; }

@@ -2,7 +2,7 @@ namespace LibraryService.Domain.Entities;
 
 public class Book
 {
-    public int BookId { get; init; }
+    public int Id { get; init; }
     public int CurrentCount { get; set; }
     public int MaxCount { get; init; }
     public string Title { get; init; }

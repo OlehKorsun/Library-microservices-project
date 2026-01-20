@@ -47,7 +47,7 @@ namespace LibraryService.Infrastructure.Migrations
                         name: "FK_Books_Authors_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "Authors",
-                        principalColumn: "AuthorId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -69,18 +69,18 @@ namespace LibraryService.Infrastructure.Migrations
                         name: "FK_Orders_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
-                        principalColumn: "BookId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_AuthorId",
                 table: "Books",
-                column: "AuthorId");
+                column: "Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_BookId",
                 table: "Orders",
-                column: "BookId");
+                column: "Id");
         }
 
         /// <inheritdoc />

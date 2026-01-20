@@ -16,7 +16,7 @@ public class BooksController(IBookService bookService) : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetBookByIdAsync([FromRoute]int id, CancellationToken ct)
+    public async Task<IActionResult> GetBookByIdAsync([FromRoute]int id, CancellationToken ct = default)
     {
         var book = await bookService.GetBookByIdAsync(id, ct);
         return Ok(book);
@@ -32,7 +32,7 @@ public class BooksController(IBookService bookService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddNewBooksAsync([FromBody] BookRequest book, CancellationToken ct =  default)
     {
-        var createdBook = await bookService.AddNewBooksAsync(book, ct);
-        return Ok(createdBook);
+        await bookService.AddNewBooksAsync(book, ct);
+        return Ok();
     }
 }
