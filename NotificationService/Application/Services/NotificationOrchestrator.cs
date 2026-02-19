@@ -7,21 +7,21 @@ namespace Application.Services;
 
 public class NotificationOrchestrator(IEmailSenderService emailSender, INotificationRepository repository)
 {
-    public async Task HandleBookOverdueAsync(BookOverdueDto bookOverdue)
+    public async Task HandleBookOverdueAsync(NotificationDto notification)
     {
         var subject = "The deadline for submitting the book has passed!";
-        var body = $"Hi! You forget to return the {bookOverdue.BookTitle} book to the library! The deadline was: {bookOverdue.DueDate:d}";
+        var body = $"Hi! You forget to return the {notification.BookTitle} book to the library! The deadline was: {notification.DueDate:d}";
 
         var log = new NotificationLog
         {
             Subject = subject,
             Body = body,
-            RecipientEmail = bookOverdue.Email,
+            To = notification.Email,
         };
 
         try
         {
-            await emailSender.SendEmailAsync(bookOverdue.Email, subject, body);
+            await emailSender.SendEmailAsync(notification.Email, subject, body);
             log.IsSuccess = true;
         }
         catch (Exception ex)

@@ -9,17 +9,46 @@ public class MongoNotificationRepository : INotificationRepository
 {
     private readonly IMongoCollection<NotificationLog> _collection;
 
-    public MongoNotificationRepository(IOptions<MongoDbSettings> configuration)
+    public MongoNotificationRepository(IMongoDatabase db)
     {
-        var dbSettings = configuration.Value;
-        
-        var client = new MongoClient(dbSettings.ConnectionString);
-        var database = client.GetDatabase(dbSettings.DatabaseName);
-        _collection = database.GetCollection<NotificationLog>("NotificationLogs");
+        _collection = db.GetCollection<NotificationLog>("NotificationLogs");
+    }
+    
+    public async Task<IEnumerable<NotificationLog>> GetAllAsync(CancellationToken ct = default)
+    {
+        var notification = await _collection.Find(Builders<NotificationLog>.Filter.Empty).ToListAsync(ct);
+        return notification;
     }
 
-    public async Task AddAsync(NotificationLog log)
+    public async Task<NotificationLog> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        await _collection.InsertOneAsync(log);
+        var filter = Builders<NotificationLog>.Filter.Eq(x => x.Id, id);
+        var notification = await _collection.Find(filter).FirstOrDefaultAsync(ct);
+        return notification;
     }
+    
+
+    public async Task AddAsync(NotificationLog log, CancellationToken ct = default)
+    {
+        await _collection.InsertOneAsync(log, cancellationToken: ct);
+    }
+
+    public async Task<bool> UpdateAsync(NotificationLog log, CancellationToken ct = default)
+    {
+        var filter = Builders<NotificationLog>.Filter.Eq(x => x.Id, log.Id);
+        
+        var result =  await _collection.ReplaceOneAsync(filter, log, cancellationToken: ct);
+        
+        return result.ModifiedCount > 0;
+    }
+
+    public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+    {
+        var filter = Builders<NotificationLog>.Filter.Eq(x => x.Id, id);
+        
+        var result = await _collection.DeleteOneAsync(filter, ct);
+
+        return result.DeletedCount > 0;
+    }
+    
 }

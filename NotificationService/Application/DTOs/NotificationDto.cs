@@ -1,6 +1,6 @@
 namespace Application.DTOs;
 
-public record BookOverdueDto
+public record NotificationDto
 {
     public int Id { get; init; }
     public string Email  { get; init; }

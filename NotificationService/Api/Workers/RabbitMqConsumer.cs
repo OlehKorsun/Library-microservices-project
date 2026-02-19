@@ -40,7 +40,7 @@ public class RabbitMqConsumer : BackgroundService
                         var body = args.Body.ToArray();
                         var messageJson = Encoding.UTF8.GetString(body);
 
-                        var eventMessage = JsonSerializer.Deserialize<BookOverdueDto>(messageJson);
+                        var eventMessage = JsonSerializer.Deserialize<NotificationDto>(messageJson);
 
                         if (eventMessage != null)
                         {
