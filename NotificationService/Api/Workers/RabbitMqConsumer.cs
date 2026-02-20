@@ -44,7 +44,7 @@ public class RabbitMqConsumer : BackgroundService
 
                         if (eventMessage != null)
                         {
-                            Console.WriteLine($" [RabbitMQ] Received task for: {eventMessage.Email}");
+                            Console.WriteLine($" [RabbitMQ] Received task for: {eventMessage.To}");
 
                             using (var scope = _serviceProvider.CreateScope())
                             {

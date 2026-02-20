@@ -1,4 +1,5 @@
 using Api.Configurations;
+using Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.ConfigAplication(builder.Configuration);
 builder.Services.ConfigSendGrid(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

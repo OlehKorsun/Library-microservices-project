@@ -16,12 +16,12 @@ public class NotificationOrchestrator(IEmailSenderService emailSender, INotifica
         {
             Subject = subject,
             Body = body,
-            To = notification.Email,
+            To = notification.To,
         };
 
         try
         {
-            await emailSender.SendEmailAsync(notification.Email, subject, body);
+            await emailSender.SendEmailAsync(notification.To, subject, body);
             log.IsSuccess = true;
         }
         catch (Exception ex)
