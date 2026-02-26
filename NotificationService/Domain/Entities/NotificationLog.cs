@@ -11,6 +11,9 @@ public class NotificationLog
     public DateTime SentAt { get; set; }
     public bool IsSuccess { get; set; }
     public string? ErrorMessage { get; set; }
-
+    
+    public int AttemptCount { get; set; } = 0;
     public int MaxAttemptCount { get; set; } = 3;
+    
+    public bool CanRetry => AttemptCount < MaxAttemptCount;
 }

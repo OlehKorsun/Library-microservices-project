@@ -51,4 +51,21 @@ public class MongoNotificationRepository : INotificationRepository
         return result.DeletedCount > 0;
     }
     
+    public async Task<NotificationLog?> GetByBusinessKeyAsync(
+        string to,
+        string subject,
+        DateOnly dueDate,
+        string bookTitle,
+        CancellationToken ct = default)
+    {
+        var filter = Builders<NotificationLog>.Filter.And(
+            Builders<NotificationLog>.Filter.Eq(x => x.To, to),
+            Builders<NotificationLog>.Filter.Eq(x => x.Subject, subject),
+            Builders<NotificationLog>.Filter.Eq(x => x.DueDate, dueDate),
+            Builders<NotificationLog>.Filter.Eq(x => x.BookTitle, bookTitle)
+        );
+
+        return await _collection.Find(filter).FirstOrDefaultAsync(ct);
+    }
+    
 }

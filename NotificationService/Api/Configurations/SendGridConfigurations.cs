@@ -9,7 +9,7 @@ public static class SendGridConfigurations
 {
     public static IServiceCollection ConfigSendGrid(this IServiceCollection services, IConfiguration configuration)
     {
-        var sendGridSection = configuration.GetSection("SendGridSettings");
+        var sendGridSection = configuration.GetSection(SendGridSettings.SectionName);
         services.Configure<SendGridSettings>(sendGridSection);
 
         var apiKey = sendGridSection["ApiKey"]; 

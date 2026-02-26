@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Application.DTOs;
 using Application.Services;
+using Domain.Enums;
 using Infrastructure.Messaging;
 using RabbitMQ.Client.Events;
 
@@ -21,7 +22,7 @@ public class RabbitMqConsumer : BackgroundService
     
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        var queueName = "notification_queue";
+        const string queueName = "notification_queue";
 
         while (!ct.IsCancellationRequested)
         {
@@ -33,36 +34,83 @@ public class RabbitMqConsumer : BackgroundService
                 await channel.QueueDeclareAsync(queueName, false, false, false, cancellationToken: ct);
                 
                 var consumer = new AsyncEventingBasicConsumer(channel);
+                
                 consumer.ReceivedAsync += async (sender, args) =>
                 {
                     try
                     {
                         var body = args.Body.ToArray();
                         var messageJson = Encoding.UTF8.GetString(body);
+                        
+                        NotificationDto? eventMessage = null;
 
-                        var eventMessage = JsonSerializer.Deserialize<NotificationDto>(messageJson);
+                        // var eventMessage = JsonSerializer.Deserialize<NotificationDto>(messageJson);
 
-                        if (eventMessage != null)
+                        try
                         {
-                            Console.WriteLine($" [RabbitMQ] Received task for: {eventMessage.To}");
-
-                            using (var scope = _serviceProvider.CreateScope())
-                            {
-                                var orchestration =
-                                    scope.ServiceProvider.GetRequiredService<NotificationOrchestrator>();
-
-                                await orchestration.HandleBookOverdueAsync(eventMessage);
-                            }
+                            eventMessage = JsonSerializer.Deserialize<NotificationDto>(messageJson);
                         }
+                        catch (JsonException jsonEx)
+                        {
+                            Console.WriteLine($" [!] JSON deserialization error: {jsonEx.Message}");
+                        }
+
+                        if (eventMessage == null)
+                        {
+                            Console.WriteLine(" [!] Received invalid or empty message. Rejecting.");
+                            
+                            await channel.BasicNackAsync(
+                                deliveryTag: args.DeliveryTag,
+                                multiple: false,
+                                requeue: false
+                            );
+
+                            return;
+                        }
+                        
+                        Console.WriteLine($" [RabbitMQ] Received task for: {eventMessage.To}");
+
+                        using var scope = _serviceProvider.CreateScope();
+                        
+                        var orchestration =
+                            scope.ServiceProvider.GetRequiredService<NotificationOrchestrator>();
+
+                        var result = await orchestration.HandleBookOverdueAsync(eventMessage);
+                        
+                        
+                        switch (result)
+                        {
+                            case NotificationResult.Success:
+                                Console.WriteLine("Email sent");
+                                await channel.BasicAckAsync(args.DeliveryTag, false);
+                                break;
+
+                            case NotificationResult.Retry:
+                                Console.WriteLine("Retry scheduled");
+                                await channel.BasicNackAsync(args.DeliveryTag, false, true);
+                                break;
+
+                            case NotificationResult.Failed:
+                                Console.WriteLine("Max attempts reached");
+                                await channel.BasicAckAsync(args.DeliveryTag, false);
+                                break;
+                        }
+                        
                     } catch (Exception ex)
                     {
                         Console.WriteLine($" [!] Error processing message: {ex.Message}");
+                        
+                        await channel.BasicNackAsync(
+                            deliveryTag: args.DeliveryTag,
+                            multiple: false,
+                            requeue: true
+                        );
                     }
                 };
                 
                 await channel.BasicConsumeAsync(
                     queue: queueName,
-                    autoAck: true,
+                    autoAck: false,
                     consumerTag: string.Empty,
                     noLocal: false,
                     exclusive: false,
@@ -75,6 +123,7 @@ public class RabbitMqConsumer : BackgroundService
             }
             catch (Exception ex)
             {
+                Console.WriteLine($" [!] RabbitMQ connection error: {ex.Message}");
                 await Task.Delay(TimeSpan.FromSeconds(5), ct);
             }
         }

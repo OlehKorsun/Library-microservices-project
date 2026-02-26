@@ -9,4 +9,10 @@ public interface INotificationRepository
     Task AddAsync(NotificationLog notification, CancellationToken ct = default);
     Task<bool> UpdateAsync(NotificationLog notification, CancellationToken ct = default);
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+    Task<NotificationLog?> GetByBusinessKeyAsync(
+        string to,
+        string subject,
+        DateOnly dueDate,
+        string bookTitle,
+        CancellationToken ct = default);
 }
