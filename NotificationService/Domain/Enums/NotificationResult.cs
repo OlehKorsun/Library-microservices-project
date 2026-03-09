@@ -4,5 +4,6 @@ public enum NotificationResult
 {
     Success,
     Retry,
-    Failed
+    Failed,
+    New
 }

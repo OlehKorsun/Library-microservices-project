@@ -9,8 +9,6 @@ namespace Application.Services;
 
 public class NotificationService(INotificationRepository repository) : INotificationService
 {
-    
-    
     public async Task<IEnumerable<NotificationDto>> GetNotificationsAsync(CancellationToken ct = default)
     {
         var notifications = await repository.GetAllAsync(ct);
@@ -21,7 +19,7 @@ public class NotificationService(INotificationRepository repository) : INotifica
             Subject = n.Subject,
             Body = n.Body,
             SentAt = n.SentAt,
-            IsSuccess =  n.IsSuccess,
+            Status =  n.Status,
             ErrorMessage = n.ErrorMessage
         });
     }
@@ -37,7 +35,7 @@ public class NotificationService(INotificationRepository repository) : INotifica
             Subject = notification.Subject,
             Body = notification.Body,
             SentAt = notification.SentAt,
-            IsSuccess = notification.IsSuccess,
+            Status = notification.Status,
             ErrorMessage = notification.ErrorMessage,
             BookTitle = notification.BookTitle
         };

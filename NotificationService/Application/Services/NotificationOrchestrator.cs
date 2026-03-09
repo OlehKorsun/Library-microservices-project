@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Interfaces.Configurations;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -6,53 +7,58 @@ using Domain.Enums;
 
 namespace Application.Services;
 
-public class NotificationOrchestrator(IEmailSenderService emailSender, INotificationRepository repository)
+public class NotificationOrchestrator(
+    IEmailSenderService emailSender, 
+    INotificationRepository repository,
+    INotificationSettings notificationSettings)
 {
     public async Task<NotificationResult> HandleBookOverdueAsync(NotificationDto notification)
     {
-        // var subject = "The deadline for submitting the book has passed!";
-        // var body = $"Hi! You forget to return the {notification.BookTitle} book to the library! The deadline was: {notification.DueDate:d}";
-
-        var log = await GetOrCreateAsync(notification);
+        var notificationLog = await GetOrCreateAsync(notification);
         
-        if (log.IsSuccess)
-        {
+        if (notificationLog.Status == NotificationResult.Success)
             return NotificationResult.Success;
-        }
         
-        if (!log.CanRetry)
+        if (notificationLog.AttemptCount >= notificationSettings.MaxAttemptCount)
         {
+            notificationLog.Status = NotificationResult.Failed;
+            await repository.UpdateAsync(notificationLog);
+            
             return NotificationResult.Failed;
         }
 
         try
         {
-            log.AttemptCount++;
+            notificationLog.AttemptCount++;
             
             await emailSender.SendEmailAsync(
                 notification.To, 
                 notification.Subject, 
                 notification.Body);
             
-            log.IsSuccess = true;
-            log.SentAt = DateTime.UtcNow;
-            log.ErrorMessage = null;
+            notificationLog.Status = NotificationResult.Success;
+            notificationLog.SentAt = DateTime.UtcNow;
+            notificationLog.ErrorMessage = null;
             
-            await repository.UpdateAsync(log);
+            await repository.UpdateAsync(notificationLog);
             
             return NotificationResult.Success;
         }
         catch (Exception ex)
         {
-            // log.IsSuccess = false;
-            log.ErrorMessage = ex.Message;
+            notificationLog.ErrorMessage = ex.Message;
             
-            await repository.UpdateAsync(log);
+            if (notificationLog.AttemptCount >= notificationSettings.MaxAttemptCount)
+            {
+                notificationLog.Status = NotificationResult.Failed;
+                await repository.UpdateAsync(notificationLog);
+                
+                return NotificationResult.Failed;
+            }
             
-            if (log.CanRetry)
-                return NotificationResult.Retry;
+            await repository.UpdateAsync(notificationLog);
 
-            return NotificationResult.Failed;
+            return NotificationResult.Retry;
         }
     }
     
@@ -74,9 +80,8 @@ public class NotificationOrchestrator(IEmailSenderService emailSender, INotifica
             Body = dto.Body,
             DueDate = dto.DueDate,
             BookTitle = dto.BookTitle,
-            AttemptCount = 0,
-            MaxAttemptCount = 3,
-            SentAt = DateTime.UtcNow
+            Status = NotificationResult.New,
+            AttemptCount = 0
         };
 
         await repository.AddAsync(log);

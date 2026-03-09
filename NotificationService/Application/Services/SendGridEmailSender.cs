@@ -1,5 +1,6 @@
 using Application.Interfaces.Services;
 using Application.Settings;
+using Domain.Exceptions;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -19,7 +20,7 @@ public class SendGridEmailSender : IEmailSenderService
     
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        var from = new EmailAddress(_settings.FromEmail, _settings.FromName);
+        var @from = new EmailAddress(_settings.FromEmail, _settings.FromName);
         var receiver = new EmailAddress(to);
         
         var msg = MailHelper.CreateSingleEmail(from, receiver, subject, body, body);
@@ -29,7 +30,7 @@ public class SendGridEmailSender : IEmailSenderService
         if (!response.IsSuccessStatusCode)
         {
             var errorBody = await response.Body.ReadAsStringAsync();
-            throw new Exception($"SendGrid error: {response.StatusCode}. Details: {errorBody}");
+            throw new SendGridException($"SendGrid error: {response.StatusCode}. Details: {errorBody}");
         }
 
         Console.WriteLine($" [SendGrid] Email successfully queued for {to}");

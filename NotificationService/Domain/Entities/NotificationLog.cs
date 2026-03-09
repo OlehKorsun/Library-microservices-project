@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Entities;
 
 public class NotificationLog
@@ -8,12 +10,10 @@ public class NotificationLog
     public string Body { get; set; } = string.Empty;
     public DateOnly DueDate { get; set; }
     public string BookTitle { get; set; } = string.Empty;
-    public DateTime SentAt { get; set; }
-    public bool IsSuccess { get; set; }
+    public DateTime? SentAt { get; set; }
     public string? ErrorMessage { get; set; }
     
-    public int AttemptCount { get; set; } = 0;
-    public int MaxAttemptCount { get; set; } = 3;
+    public int AttemptCount { get; set; }
     
-    public bool CanRetry => AttemptCount < MaxAttemptCount;
+    public NotificationResult? Status { get; set; }
 }

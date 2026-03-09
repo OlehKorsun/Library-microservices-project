@@ -1,7 +1,6 @@
 using Application.Interfaces.Repositories;
 using Domain.Entities;
 using MongoDB.Driver;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repositories;
 
